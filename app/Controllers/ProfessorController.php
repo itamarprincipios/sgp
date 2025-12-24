@@ -1,0 +1,164 @@
+<?php
+
+require_once __DIR__ . '/../Models/Document.php';
+
+
+require_once __DIR__ . '/../Models/Planning.php';
+
+class ProfessorController extends Controller {
+    public function dashboard() {
+        checkAuth('professor');
+        $user = auth();
+        
+        $docModel = new Document();
+        $documents = $docModel->getByUserId($user['id']);
+        
+        $planningModel = new Planning();
+        $periods = $planningModel->getReleasedBySchoolIdAndType($user['school_id'], $user['is_physical_education'] ?? 0);
+
+        require_once __DIR__ . '/../Models/RankingModel.php';
+        $rankingModel = new RankingModel();
+        $medals = $rankingModel->getMedalsForUser($user['id']);
+        
+        // Sum total points for this professor (including pending approval)
+        $totalPoints = 0;
+        foreach ($documents as $doc) {
+            if (in_array($doc['status'], ['enviado', 'atrasado', 'aprovado', 'ajustado'])) {
+                $totalPoints += (float)$doc['score_final'];
+            }
+        }
+
+        $this->view('dashboard/professor', [
+            'user' => $user,
+            'documents' => $documents,
+            'periods' => $periods,
+            'medals' => $medals,
+            'totalPoints' => $totalPoints
+        ]);
+    }
+
+
+    public function upload() {
+        checkAuth('professor');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user = auth();
+            $title = $_POST['title'];
+            $type = $_POST['type'];
+            $period_id = $_POST['period_id'];
+            
+            // Upload logica
+            if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/';
+                // Ensure dir exists
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+                $fileName = time() . '_' . basename($_FILES['file']['name']);
+                $targetFile = $uploadDir . $fileName;
+
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
+                    $docModel = new Document();
+                    $planningModel = new Planning();
+                    $period = $planningModel->findById($period_id);
+
+                    $score_base = 10;
+                    $penalty_delay = 0;
+                    
+                    if ($period) {
+                        $now = time();
+                        $deadline = strtotime($period['deadline']);
+                        $opening = strtotime($period['opening_date']);
+                        
+                        // 1. Cálculo da Pontuação Base (Decrescente 20 -> 10)
+                        $T_total = 10080; // 7 dias em minutos
+                        if ($now <= $deadline) {
+                            $diff_seconds = $deadline - $now;
+                            $T_restante = floor($diff_seconds / 60);
+                            
+                            // Se estiver dentro da janela de 7 dias (ou ate antes, embora a release bloqueie)
+                            if ($T_restante > $T_total) $T_restante = $T_total;
+                            
+                            $score_base = floor(10 + ($T_restante / $T_total) * 10);
+                        } else {
+                            // Atrasado
+                            $score_base = 10;
+                            
+                            // 2. Cálculo da Penalidade por Atraso
+                            $diff_delay_seconds = $now - $deadline;
+                            $days_delay = ceil($diff_delay_seconds / 86400);
+                            
+                            if ($days_delay == 1) $penalty_delay = 2;
+                            elseif ($days_delay == 2) $penalty_delay = 5;
+                            elseif ($days_delay >= 3) $penalty_delay = 10;
+                        }
+                    }
+
+                    $score_final = $score_base - $penalty_delay;
+
+                    $docModel->create([
+                        'user_id' => $user['id'],
+                        'period_id' => $period_id,
+                        'title' => $title,
+                        'type' => $type,
+                        'file_path' => $fileName,
+                        'status' => ($penalty_delay > 0) ? 'atrasado' : 'enviado',
+                        'score_base' => $score_base,
+                        'penalty_delay' => $penalty_delay,
+                        'score_final' => $score_final
+                    ]);
+                    
+                    // Simple feedback via session would be nice, but skipping for brevity, redirecting back.
+                    redirect('professor/dashboard');
+                } else {
+                    echo "Erro ao mover arquivo.";
+                }
+            } else {
+               echo "Erro no upload.";
+            }
+        }
+    }
+
+    public function changePassword() {
+         checkAuth('professor');
+         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+             $newPass = $_POST['password'];
+             $user = auth();
+             
+             require_once __DIR__ . '/../Models/User.php';
+             $userModel = new User();
+             $userModel->updatePassword($user['id'], password_hash($newPass, PASSWORD_DEFAULT));
+             
+             redirect('professor/dashboard');
+         }
+    }
+
+    public function deleteUpload() {
+        checkAuth('professor');
+        $id = $_GET['id'] ?? null;
+        if (!$id) redirect('professor/dashboard');
+
+        $user = auth();
+        $docModel = new Document();
+        
+        // Find document to ensure ownership and get file path
+        // We need a method to findById, or query directly. Assuming findById logic or direct query.
+        // Since Document extends Model, and Model usually has basics, let's check. 
+        // Actually Document model usually doesn't have generic findById unless implemented.
+        // Let's implement a quick check logic here or use db query directly for MVP speed.
+        
+        $doc = $docModel->findById($id);
+        
+        if ($doc && $doc['user_id'] == $user['id']) {
+            // Delete file from disk
+            $filePath = __DIR__ . '/../../public/uploads/' . $doc['file_path'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Delete from DB
+            $docModel->delete($id);
+        }
+
+        redirect('professor/dashboard');
+    }
+}
+

@@ -1,0 +1,100 @@
+<?php
+session_start();
+
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../app/Helpers/functions.php';
+require_once __DIR__ . '/../app/Core/Database.php';
+require_once __DIR__ . '/../app/Core/Controller.php';
+require_once __DIR__ . '/../app/Core/Model.php';
+
+// Autoload simples (poderia ser composer, mas manual para MVP)
+spl_autoload_register(function ($class) {
+    if (file_exists(__DIR__ . '/../app/Controllers/' . $class . '.php')) {
+        require_once __DIR__ . '/../app/Controllers/' . $class . '.php';
+    } elseif (file_exists(__DIR__ . '/../app/Models/' . $class . '.php')) {
+        require_once __DIR__ . '/../app/Models/' . $class . '.php';
+    }
+});
+
+// Router simples
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = trim(str_replace('/public', '', $uri), '/'); // Ajuste para rodar em subpasta se necessário ou root
+
+// Rotas
+$routes = [
+    '' => 'AuthController@login',
+    'login' => 'AuthController@login',
+    'auth/verify' => 'AuthController@verify',
+    'logout' => 'AuthController@logout',
+    'professor/dashboard' => 'ProfessorController@dashboard',
+    'professor/upload' => 'ProfessorController@upload',
+    'school/dashboard' => 'SchoolController@dashboard',
+    'school/planning/create' => 'SchoolController@createPlanning',
+    'school/planning/store' => 'SchoolController@storePlanning',
+    'school/planning/view' => 'SchoolController@viewPlanning',
+    'school/class/store' => 'SchoolController@storeClass',
+    'school/class/edit' => 'SchoolController@editClass',
+    'school/class/update' => 'SchoolController@updateClass',
+    'school/class/delete' => 'SchoolController@deleteClass',
+    'school/planning/edit' => 'SchoolController@editPlanning',
+    'school/planning/update' => 'SchoolController@updatePlanning',
+    'school/planning/delete' => 'SchoolController@deletePlanning',
+
+    'school/professor/store' => 'SchoolController@storeProfessor',
+    'school/professor/edit' => 'SchoolController@editProfessor',
+    'school/professor/update' => 'SchoolController@updateProfessor',
+    'school/professor/delete' => 'SchoolController@deleteProfessor',
+    'school/professor/reset-password' => 'SchoolController@resetProfessorPassword',
+    'school/planning/associate-bimester' => 'SchoolController@associateToBimester',
+    'school/document/review' => 'SchoolController@reviewDocument',
+    'semed/dashboard' => 'SemedController@dashboard',
+    'semed/schools' => 'SemedController@schools',
+    'semed/school/store' => 'SemedController@storeSchool',
+    'semed/school/edit' => 'SemedController@editSchool',
+    'semed/school/update' => 'SemedController@updateSchool',
+    'semed/school/delete' => 'SemedController@deleteSchool',
+    'semed/coordinators' => 'SemedController@coordinators',
+    'semed/coordinator/store' => 'SemedController@storeCoordinator',
+    'semed/coordinator/edit' => 'SemedController@editCoordinator',
+    'semed/coordinator/update' => 'SemedController@updateCoordinator',
+    'semed/password/reset' => 'SemedController@resetPassword',
+    'semed/plannings' => 'SemedController@plannings',
+    'semed/reports' => 'SemedController@reports',
+    'semed/password/change' => 'SemedController@changePassword',
+    'professor/password/change' => 'ProfessorController@changePassword',
+    'professor/upload/delete' => 'ProfessorController@deleteUpload',
+    'school/mark-viewed' => 'SchoolController@markUploadsAsViewed',
+    'school/password/change' => 'SchoolController@changePassword',
+
+    // Admin Routes
+    'admin/dashboard' => 'AdminController@dashboard',
+    'admin/user/store' => 'AdminController@storeUser',
+    'admin/user/update' => 'AdminController@updateUser',
+    'admin/user/delete' => 'AdminController@deleteUser',
+    'admin/user/reset-password' => 'AdminController@resetPassword',
+    'admin/school/store' => 'AdminController@storeSchool',
+    'admin/school/delete' => 'AdminController@deleteSchool',
+
+
+
+];
+
+if (array_key_exists($uri, $routes)) {
+    $parts = explode('@', $routes[$uri]);
+    $controllerName = $parts[0];
+    $methodName = $parts[1];
+
+    if (class_exists($controllerName)) {
+        $controller = new $controllerName();
+        if (method_exists($controller, $methodName)) {
+            $controller->$methodName();
+        } else {
+            die("Method $methodName not found in $controllerName");
+        }
+    } else {
+        die("Controller $controllerName not found");
+    }
+} else {
+    // 404
+    echo "404 - Página não encontrada (" . htmlspecialchars($uri) . ")";
+}
