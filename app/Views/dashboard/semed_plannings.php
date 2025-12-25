@@ -170,7 +170,7 @@
                             </span>
                         </td>
                         <td>
-                            <a href="<?= url($doc['file_path']) ?>" target="_blank" class="btn btn-sm" style="background: #f1f3f5; color: #333; border: 1px solid #ddd; width: auto; font-size: 0.7rem;">
+                            <a href="<?= url('uploads/' . $doc['file_path']) ?>" target="_blank" class="btn btn-sm" style="background: #f1f3f5; color: #333; border: 1px solid #ddd; width: auto; font-size: 0.7rem;">
                                 <i class="fas fa-download"></i> Ver Arquivo
                             </a>
                         </td>

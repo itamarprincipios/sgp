@@ -631,3 +631,558 @@ body {
 .sub-tab-btn i {
     font-size: 1rem;
 }
+/* ========================================
+   RESPONSIVE FOUNDATION - MOBILE & TABLET
+   ======================================== */
+
+/* Tablet Adjustments (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .main-container {
+        padding: 1.5rem;
+        max-width: 100%;
+    }
+    
+    .navbar {
+        padding: 1rem 1.5rem;
+    }
+    
+    .stats-cards,
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile Devices (max-width: 768px) */
+@media (max-width: 768px) {
+    /* Container & Spacing */
+    .main-container {
+        padding: 1rem;
+        max-width: 100%;
+    }
+    
+    .navbar {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+    }
+    
+    /* Typography */
+    .logo h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo p {
+        font-size: 0.9rem;
+    }
+    
+    .school-hero h1 {
+        font-size: 1.6rem;
+    }
+    
+    .school-hero p {
+        font-size: 0.95rem;
+    }
+    
+    /* Cards & Grids */
+    .stats-cards,
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .card {
+        padding: 1rem;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    /* Dashboard Header */
+    .dashboard-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Upload & List Sections */
+    .upload-section,
+    .list-section {
+        padding: 1rem;
+    }
+    
+    .upload-section h3,
+    .list-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Filter Container */
+    .filter-container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .filter-group {
+        min-width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .filter-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .btn-filter-clear {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* School Hero */
+    .school-hero {
+        padding: 25px 20px;
+    }
+    
+    .school-hero::after {
+        font-size: 100px;
+        right: 10px;
+        bottom: -10px;
+    }
+    
+    /* Sub-tabs */
+    .sub-tabs {
+        gap: 8px;
+    }
+    
+    .sub-tab-btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+    
+    /* Navigation Tabs */
+    .nav-tabs {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px !important;
+    }
+    
+    .semed-nav-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        gap: 6px;
+    }
+    
+    .semed-nav-btn span {
+        display: none;
+    }
+    
+    .semed-nav-btn i {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+}
+
+/* Small Mobile Devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .main-container {
+        padding: 0.75rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .nav-brand {
+        font-size: 1.2rem;
+    }
+    
+    .login-container {
+        margin: 50px auto;
+        padding: 1.5rem;
+    }
+    
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card p {
+        font-size: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.3rem;
+    }
+    
+    .school-hero {
+        padding: 20px 15px;
+    }
+    
+    .school-hero h1 {
+        font-size: 1.4rem;
+        gap: 10px;
+    }
+    
+    .school-hero::after {
+        font-size: 80px;
+    }
+    
+    .btn {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.65rem;
+        font-size: 0.95rem;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .nav-user {
+        gap: 0.5rem;
+    }
+    
+    .nav-user span {
+        font-size: 0.85rem;
+    }
+    
+    .d-none.d-md-inline {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   HAMBURGER MENU & MOBILE NAVIGATION
+   ======================================== */
+
+/* Hamburger Menu Button (Hidden on Desktop) */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1000;
+}
+
+.hamburger-menu span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-color);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Hamburger Animation when Active */
+.hamburger-menu.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile Navigation Styles */
+@media (max-width: 768px) {
+    /* Show Hamburger Button */
+    .hamburger-menu {
+        display: flex;
+        order: 2;
+    }
+    
+    /* Navbar Layout */
+    .navbar {
+        position: relative;
+    }
+    
+    .nav-brand {
+        order: 1;
+    }
+    
+    .nav-user {
+        order: 3;
+    }
+    
+    /* Hide Navigation by Default on Mobile */
+    .nav-tabs {
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--navbar-bg);
+        flex-direction: column !important;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid var(--border-color);
+        z-index: 999;
+        gap: 0.5rem !important;
+    }
+    
+    /* Show Navigation when Active */
+    .nav-tabs.active {
+        display: flex !important;
+    }
+    
+    /* Mobile Navigation Buttons */
+    .nav-tabs .semed-nav-btn {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+    
+    .nav-tabs .semed-nav-btn span {
+        display: inline !important;
+    }
+    
+    .nav-tabs .semed-nav-btn i {
+        font-size: 1.1rem;
+        margin-right: 10px;
+    }
+}
+
+/* ========================================
+   PART 5: TOUCH-FRIENDLY FORMS & BUTTONS
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Minimum Touch Target Size (44x44px recommended) */
+    .btn,
+    button,
+    a.semed-nav-btn,
+    a.sub-tab-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Form Inputs - Larger for Touch */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        min-height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Better Spacing Between Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Larger Checkboxes and Radio Buttons */
+    input[type='checkbox'],
+    input[type='radio'] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    
+    /* Action Buttons Full Width on Mobile */
+    .btn:not(.btn-sm):not(.btn-icon) {
+        width: 100%;
+        padding: 0.85rem 1.5rem;
+    }
+    
+    /* Icon Buttons - Ensure Touch Size */
+    .btn-icon,
+    .btn-sm {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem;
+    }
+}
+
+/* ========================================
+   PART 4: RESPONSIVE TABLES
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Hide table headers */
+    .data-table thead {
+        display: none;
+    }
+    
+    /* Make table rows display as cards */
+    .data-table,
+    .data-table tbody,
+    .data-table tr,
+    .data-table td {
+        display: block;
+        width: 100%;
+    }
+    
+    .data-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        background: var(--card-bg);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .data-table td {
+        padding: 0.75rem 0;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        position: relative;
+        padding-left: 50%;
+    }
+    
+    .data-table td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Add labels before each cell */
+    .data-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-right: 10px;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    /* Action buttons in tables */
+    .data-table td .btn-icon,
+    .data-table td .btn-whatsapp {
+        display: inline-flex;
+        margin: 0 0.25rem;
+        min-width: 40px;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Even tighter spacing for small screens */
+    .data-table tr {
+        padding: 0.75rem;
+    }
+    
+    .data-table td {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+}
+
+/* ========================================
+   FIX: SUB-TABS MOBILE OVERFLOW
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Sub-tabs: Horizontal Scroll instead of Wrap */
+    .sub-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        gap: 8px !important;
+        padding-bottom: 10px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .sub-tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .sub-tabs::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .sub-tabs::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+    
+    /* Sub-tab buttons: prevent shrinking */
+    .sub-tab-btn {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+        padding: 8px 16px !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Even smaller on tiny screens */
+    .sub-tab-btn {
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ========================================
+   FIX: TAB-BTN MOBILE SCROLL (COORDINATOR DASHBOARD)
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Main Tabs Container: Horizontal Scroll */
+    .tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        gap: 8px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 2px solid #ddd !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .tabs::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .tabs::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+    
+    /* Tab buttons: prevent shrinking and wrapping */
+    .tab-btn {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+        min-width: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Even smaller on tiny screens */
+    .tab-btn {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+    }
+}

@@ -38,6 +38,20 @@
             <button type="submit" class="btn btn-primary">Entrar</button>
         </form>
     </div>
+    
+    <!-- WhatsApp Button - Only on Login Page -->
+    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
+        <a href="https://wa.me/5595991248941?text=Olá, preciso de suporte no sistema SGP." target="_blank" style="background: #25D366; color: white; padding: 10px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
+            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Fale Conosco
+        </a>
+    </div>
+    
+    <!-- N CIRCUITS Logo - Only on Login Page -->
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+        <div style="background: white; padding: 8px 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <img src="<?= url('img/n_circuits_logo.png') ?>" alt="N Circuits Technologies" style="width: 100px; display: block;">
+        </div>
+    </div>
     </div>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">

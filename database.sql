@@ -134,3 +134,23 @@ CREATE TABLE `documents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table 'user_medals'
+--
+
+DROP TABLE IF EXISTS `user_medals`;
+CREATE TABLE `user_medals` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `medal_type` varchar(50) NOT NULL,
+  `period_type` varchar(20) NOT NULL,
+  `reference_date` date NOT NULL,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  UNIQUE KEY `unique_medal` (`user_id`, `medal_type`, `reference_date`),
+  CONSTRAINT `user_medals_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
