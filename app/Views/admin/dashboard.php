@@ -1,5 +1,43 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
 
+<style>
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 20px 15px !important;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.5rem !important;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr !important;
+        }
+        
+        .tabs {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab-btn {
+            white-space: nowrap;
+            flex-shrink: 0;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* Formulários responsivos */
+        form[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+        }
+        
+        form button[type="submit"] {
+            width: 100%;
+        }
+    }
+</style>
+
 <div class="dashboard-header" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
     <h1>🛡️ Painel do Super Admin</h1>
     <p>Controle total do sistema</p>

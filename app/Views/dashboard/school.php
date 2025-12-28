@@ -6,6 +6,8 @@
         display: flex;
         border-bottom: 2px solid #ddd;
         margin-bottom: 20px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     .tab-btn {
         padding: 10px 20px;
@@ -17,6 +19,8 @@
         color: #666;
         border-bottom: 3px solid transparent;
         transition: all 0.3s;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     .tab-btn.active {
         color: var(--primary);
@@ -40,6 +44,51 @@
     .dropdown-content a:hover {
         background-color: #f8f9fa !important;
         color: var(--primary) !important;
+    }
+    
+    /* Responsive Styles for Mobile/Tablet */
+    @media (max-width: 768px) {
+        .school-hero h1 {
+            font-size: 1.5rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .school-hero {
+            padding: 25px 15px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tabs {
+            gap: 8px;
+            padding-bottom: 5px;
+        }
+        
+        .tab-btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* Formulários em coluna */
+        form[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+        }
+        
+        /* Filtros em coluna */
+        .filter-container {
+            padding: 1rem;
+        }
+        
+        /* Dropdowns */
+        .dropdown-content {
+            right: auto !important;
+            left: 0 !important;
+            min-width: 100% !important;
+        }
     }
 </style>
 

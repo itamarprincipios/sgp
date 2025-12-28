@@ -12,12 +12,12 @@
 </div>
 
 <div class="list-section" style="margin-bottom: 20px;">
-    <form action="" method="GET" style="display: flex; gap: 15px; align-items: flex-end; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; flex-wrap: wrap;">
+    <form action="" method="GET" class="filter-container">
         <input type="hidden" name="type" value="<?= $type ?>">
         
-        <div style="flex: 1; min-width: 200px;">
-            <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: block;">Filtrar por Unidade Escolar</label>
-            <select name="school_id" class="form-control" onchange="this.form.submit()">
+        <div class="filter-group">
+            <label class="filter-label">Unidade Escolar</label>
+            <select name="school_id" class="filter-select" onchange="this.form.submit()">
                 <option value="">Todas as Escolas</option>
                 <?php foreach($schools as $school): ?>
                     <option value="<?= $school['id'] ?>" <?= ($schoolId == $school['id']) ? 'selected' : '' ?>><?= htmlspecialchars($school['name']) ?></option>
@@ -26,9 +26,9 @@
         </div>
 
         <?php if ($schoolId): ?>
-        <div style="flex: 1; min-width: 200px;">
-            <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: block;">Filtrar por Professor</label>
-            <select name="professor_id" class="form-control" onchange="this.form.submit()">
+        <div class="filter-group">
+            <label class="filter-label">Professor</label>
+            <select name="professor_id" class="filter-select" onchange="this.form.submit()">
                 <option value="">Todos os Professores</option>
                 <?php foreach($professors as $prof): ?>
                     <option value="<?= $prof['id'] ?>" <?= ($professorId == $prof['id']) ? 'selected' : '' ?>><?= htmlspecialchars($prof['name']) ?></option>
@@ -38,9 +38,9 @@
         <?php endif; ?>
 
         <?php if ($professorId): ?>
-        <div style="flex: 0 0 150px;">
-            <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; display: block;">Período</label>
-            <select name="period" class="form-control" onchange="this.form.submit()">
+        <div class="filter-group" style="flex: 0 0 150px; min-width: 150px;">
+            <label class="filter-label">Período</label>
+            <select name="period" class="filter-select" onchange="this.form.submit()">
                 <option value="annual" <?= ($period == 'annual') ? 'selected' : '' ?>>Anual</option>
                 <option value="monthly" <?= ($period == 'monthly') ? 'selected' : '' ?>>Mensal (Atual)</option>
                 <option value="bimonthly" <?= ($period == 'bimonthly') ? 'selected' : '' ?>>Bimestral</option>
@@ -48,7 +48,11 @@
         </div>
         <?php endif; ?>
 
-        <button type="button" onclick="window.print()" class="btn btn-secondary" style="width: auto;"><i class="fas fa-print"></i> Imprimir</button>
+        <div class="filter-actions">
+            <button type="button" onclick="window.print()" class="btn btn-secondary" style="width: auto; padding: 0.75rem 1.5rem;">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+        </div>
     </form>
 </div>
 

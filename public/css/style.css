@@ -631,6 +631,7 @@ body {
 .sub-tab-btn i {
     font-size: 1rem;
 }
+
 /* ========================================
    RESPONSIVE FOUNDATION - MOBILE & TABLET
    ======================================== */
@@ -641,11 +642,11 @@ body {
         padding: 1.5rem;
         max-width: 100%;
     }
-    
+
     .navbar {
         padding: 1rem 1.5rem;
     }
-    
+
     .stats-cards,
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -654,126 +655,127 @@ body {
 
 /* Mobile Devices (max-width: 768px) */
 @media (max-width: 768px) {
+
     /* Container & Spacing */
     .main-container {
         padding: 1rem;
         max-width: 100%;
     }
-    
+
     .navbar {
         padding: 0.75rem 1rem;
         flex-wrap: wrap;
     }
-    
+
     /* Typography */
     .logo h1 {
         font-size: 1.8rem;
     }
-    
+
     .logo p {
         font-size: 0.9rem;
     }
-    
+
     .school-hero h1 {
         font-size: 1.6rem;
     }
-    
+
     .school-hero p {
         font-size: 0.95rem;
     }
-    
+
     /* Cards & Grids */
     .stats-cards,
     .stats-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .card {
         padding: 1rem;
     }
-    
+
     .stat-card {
         padding: 15px;
     }
-    
+
     /* Dashboard Header */
     .dashboard-header {
         padding: 1rem;
         margin-bottom: 1rem;
     }
-    
+
     /* Upload & List Sections */
     .upload-section,
     .list-section {
         padding: 1rem;
     }
-    
+
     .upload-section h3,
     .list-section h3 {
         font-size: 1.1rem;
         margin-bottom: 1rem;
     }
-    
+
     /* Filter Container */
     .filter-container {
         padding: 1rem;
         gap: 1rem;
     }
-    
+
     .filter-group {
         min-width: 100%;
         flex: 1 1 100%;
     }
-    
+
     .filter-actions {
         width: 100%;
         flex-direction: column;
     }
-    
+
     .btn-filter-clear {
         width: 100%;
         justify-content: center;
     }
-    
+
     /* School Hero */
     .school-hero {
         padding: 25px 20px;
     }
-    
+
     .school-hero::after {
         font-size: 100px;
         right: 10px;
         bottom: -10px;
     }
-    
+
     /* Sub-tabs */
     .sub-tabs {
         gap: 8px;
     }
-    
+
     .sub-tab-btn {
         padding: 8px 16px;
         font-size: 0.85rem;
     }
-    
+
     /* Navigation Tabs */
     .nav-tabs {
         width: 100%;
         justify-content: flex-start;
         gap: 8px !important;
     }
-    
+
     .semed-nav-btn {
         padding: 8px 12px;
         font-size: 0.85rem;
         gap: 6px;
     }
-    
+
     .semed-nav-btn span {
         display: none;
     }
-    
+
     .semed-nav-btn i {
         font-size: 1.2rem;
         margin: 0;
@@ -785,80 +787,80 @@ body {
     .main-container {
         padding: 0.75rem;
     }
-    
+
     .navbar {
         padding: 0.5rem 0.75rem;
     }
-    
+
     .nav-brand {
         font-size: 1.2rem;
     }
-    
+
     .login-container {
         margin: 50px auto;
         padding: 1.5rem;
     }
-    
+
     .logo h1 {
         font-size: 1.5rem;
     }
-    
+
     .card p {
         font-size: 1.5rem;
     }
-    
+
     .stat-value {
         font-size: 1.3rem;
     }
-    
+
     .school-hero {
         padding: 20px 15px;
     }
-    
+
     .school-hero h1 {
         font-size: 1.4rem;
         gap: 10px;
     }
-    
+
     .school-hero::after {
         font-size: 80px;
     }
-    
+
     .btn {
         padding: 0.65rem 1.25rem;
         font-size: 0.95rem;
     }
-    
+
     .btn-sm {
         padding: 0.4rem 0.75rem;
         font-size: 0.8rem;
     }
-    
+
     .form-group {
         margin-bottom: 1.25rem;
     }
-    
+
     .form-group input,
     .form-group select,
     .form-group textarea {
         padding: 0.65rem;
         font-size: 0.95rem;
     }
-    
+
     .data-table th,
     .data-table td {
         padding: 0.75rem 0.5rem;
         font-size: 0.85rem;
     }
-    
+
     .nav-user {
         gap: 0.5rem;
     }
-    
+
     .nav-user span {
         font-size: 0.85rem;
     }
-    
+
     .d-none.d-md-inline {
         display: none !important;
     }
@@ -905,25 +907,26 @@ body {
 
 /* Mobile Navigation Styles */
 @media (max-width: 768px) {
+
     /* Show Hamburger Button */
     .hamburger-menu {
         display: flex;
         order: 2;
     }
-    
+
     /* Navbar Layout */
     .navbar {
         position: relative;
     }
-    
+
     .nav-brand {
         order: 1;
     }
-    
+
     .nav-user {
         order: 3;
     }
-    
+
     /* Hide Navigation by Default on Mobile */
     .nav-tabs {
         display: none !important;
@@ -939,23 +942,23 @@ body {
         z-index: 999;
         gap: 0.5rem !important;
     }
-    
+
     /* Show Navigation when Active */
     .nav-tabs.active {
         display: flex !important;
     }
-    
+
     /* Mobile Navigation Buttons */
     .nav-tabs .semed-nav-btn {
         width: 100%;
         justify-content: flex-start;
         padding: 12px 16px;
     }
-    
+
     .nav-tabs .semed-nav-btn span {
         display: inline !important;
     }
-    
+
     .nav-tabs .semed-nav-btn i {
         font-size: 1.1rem;
         margin-right: 10px;
@@ -967,6 +970,7 @@ body {
    ======================================== */
 
 @media (max-width: 768px) {
+
     /* Minimum Touch Target Size (44x44px recommended) */
     .btn,
     button,
@@ -975,20 +979,21 @@ body {
         min-height: 44px;
         min-width: 44px;
     }
-    
+
     /* Form Inputs - Larger for Touch */
     .form-group input,
     .form-group select,
     .form-group textarea {
         min-height: 44px;
-        font-size: 16px; /* Prevents zoom on iOS */
+        font-size: 16px;
+        /* Prevents zoom on iOS */
     }
-    
+
     /* Better Spacing Between Form Elements */
     .form-group {
         margin-bottom: 1.5rem;
     }
-    
+
     /* Larger Checkboxes and Radio Buttons */
     input[type='checkbox'],
     input[type='radio'] {
@@ -996,13 +1001,13 @@ body {
         height: 20px;
         cursor: pointer;
     }
-    
+
     /* Action Buttons Full Width on Mobile */
     .btn:not(.btn-sm):not(.btn-icon) {
         width: 100%;
         padding: 0.85rem 1.5rem;
     }
-    
+
     /* Icon Buttons - Ensure Touch Size */
     .btn-icon,
     .btn-sm {
@@ -1013,15 +1018,31 @@ body {
 }
 
 /* ========================================
+   TABLE WRAPPER FOR HORIZONTAL SCROLL
+   ======================================== */
+
+.data-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+}
+
+.data-table-wrapper .data-table {
+    min-width: 600px;
+    /* Forces scroll on small screens */
+}
+
+/* ========================================
    PART 4: RESPONSIVE TABLES
    ======================================== */
 
 @media (max-width: 768px) {
+
     /* Hide table headers */
     .data-table thead {
         display: none;
     }
-    
+
     /* Make table rows display as cards */
     .data-table,
     .data-table tbody,
@@ -1030,7 +1051,7 @@ body {
         display: block;
         width: 100%;
     }
-    
+
     .data-table tr {
         margin-bottom: 1rem;
         border: 1px solid var(--border-color);
@@ -1039,7 +1060,7 @@ body {
         background: var(--card-bg);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
-    
+
     .data-table td {
         padding: 0.75rem 0;
         border: none;
@@ -1048,11 +1069,11 @@ body {
         position: relative;
         padding-left: 50%;
     }
-    
+
     .data-table td:last-child {
         border-bottom: none;
     }
-    
+
     /* Add labels before each cell */
     .data-table td:before {
         content: attr(data-label);
@@ -1063,7 +1084,7 @@ body {
         font-weight: 600;
         color: var(--text-color);
     }
-    
+
     /* Action buttons in tables */
     .data-table td .btn-icon,
     .data-table td .btn-whatsapp {
@@ -1077,11 +1098,12 @@ body {
 }
 
 @media (max-width: 480px) {
+
     /* Even tighter spacing for small screens */
     .data-table tr {
         padding: 0.75rem;
     }
-    
+
     .data-table td {
         padding: 0.5rem 0;
         font-size: 0.9rem;
@@ -1093,6 +1115,7 @@ body {
    ======================================== */
 
 @media (max-width: 768px) {
+
     /* Sub-tabs: Horizontal Scroll instead of Wrap */
     .sub-tabs {
         display: flex !important;
@@ -1104,21 +1127,21 @@ body {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
     }
-    
+
     /* Hide scrollbar but keep functionality */
     .sub-tabs::-webkit-scrollbar {
         height: 4px;
     }
-    
+
     .sub-tabs::-webkit-scrollbar-track {
         background: transparent;
     }
-    
+
     .sub-tabs::-webkit-scrollbar-thumb {
         background: var(--border-color);
         border-radius: 4px;
     }
-    
+
     /* Sub-tab buttons: prevent shrinking */
     .sub-tab-btn {
         flex-shrink: 0 !important;
@@ -1129,6 +1152,7 @@ body {
 }
 
 @media (max-width: 480px) {
+
     /* Even smaller on tiny screens */
     .sub-tab-btn {
         padding: 6px 12px !important;
@@ -1141,6 +1165,7 @@ body {
    ======================================== */
 
 @media (max-width: 768px) {
+
     /* Main Tabs Container: Horizontal Scroll */
     .tabs {
         display: flex !important;
@@ -1154,21 +1179,21 @@ body {
         border-bottom: 2px solid #ddd !important;
         margin-bottom: 20px !important;
     }
-    
+
     /* Hide scrollbar but keep functionality */
     .tabs::-webkit-scrollbar {
         height: 4px;
     }
-    
+
     .tabs::-webkit-scrollbar-track {
         background: transparent;
     }
-    
+
     .tabs::-webkit-scrollbar-thumb {
         background: var(--border-color);
         border-radius: 4px;
     }
-    
+
     /* Tab buttons: prevent shrinking and wrapping */
     .tab-btn {
         flex-shrink: 0 !important;
@@ -1180,6 +1205,7 @@ body {
 }
 
 @media (max-width: 480px) {
+
     /* Even smaller on tiny screens */
     .tab-btn {
         padding: 8px 12px !important;

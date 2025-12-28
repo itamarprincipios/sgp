@@ -175,6 +175,46 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }
+    
+    /* Responsive Styles for Mobile/Tablet */
+    @media (max-width: 768px) {
+        .semed-hero {
+            padding: 25px 15px;
+        }
+        
+        .semed-hero h1 {
+            font-size: 1.6rem;
+        }
+        
+        .semed-hero p {
+            font-size: 0.95rem;
+        }
+        
+        .chart-container {
+            padding: 20px 15px;
+        }
+        
+        .chart-container canvas {
+            max-height: 250px !important;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+        }
+        
+        .ranking-title {
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+        }
+    }
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -192,13 +232,15 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 30px;">
     <h2>Visão Geral da Rede (SEMED)</h2>
-    <form action="" method="GET" class="filter-form" style="display: flex; gap: 10px; align-items: center; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-        <label for="filter" style="font-weight: bold; font-size: 0.9rem;">Período:</label>
-        <select name="filter" id="filter" onchange="this.form.submit()" class="form-control" style="width: auto; padding: 5px;">
-            <option value="annual" <?= ($filter == 'annual') ? 'selected' : '' ?>>Anual</option>
-            <option value="bimestral" <?= ($filter == 'bimestral') ? 'selected' : '' ?>>Bimestral</option>
-            <option value="monthly" <?= ($filter == 'monthly') ? 'selected' : '' ?>>Mensal</option>
-        </select>
+    <form action="" method="GET" class="filter-container" style="margin: 0; width: auto; min-width: 250px;">
+        <div class="filter-group" style="margin: 0; flex: 1;">
+            <label class="filter-label">Período</label>
+            <select name="filter" id="filter" onchange="this.form.submit()" class="filter-select">
+                <option value="annual" <?= ($filter == 'annual') ? 'selected' : '' ?>>Anual</option>
+                <option value="bimestral" <?= ($filter == 'bimestral') ? 'selected' : '' ?>>Bimestral</option>
+                <option value="monthly" <?= ($filter == 'monthly') ? 'selected' : '' ?>>Mensal</option>
+            </select>
+        </div>
     </form>
 </div>
 
@@ -228,7 +270,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
     <div class="chart-container">
         <div class="chart-title">
             <i class="fas fa-chart-bar"></i>
@@ -245,6 +287,14 @@
         <canvas id="timelineChart" style="max-height: 300px;"></canvas>
     </div>
 </div>
+
+<style>
+    @media (max-width: 768px) {
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 
 <script>
     // --- Chart: Bar (By School) ---
@@ -340,7 +390,7 @@
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <div class="rankings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
         <!-- Professors Ranking -->
         <div class="ranking-section">
             <div class="ranking-title">
@@ -443,6 +493,14 @@
             </table>
         </div>
     </div>
+    
+    <style>
+        @media (max-width: 768px) {
+            .rankings-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
 </div>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
