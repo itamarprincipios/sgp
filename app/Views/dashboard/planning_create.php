@@ -11,6 +11,20 @@
     <div class="upload-section" style="width: 100%; max-width: 800px; margin: 0 auto;">
         <form action="<?= url('school/planning/store') ?>" method="POST">
             <div class="form-group">
+                <?php if(isset($schools) && count($schools) > 1): ?>
+                    <label>Selecione a Escola</label>
+                    <select name="school_id" required class="form-control">
+                        <?php foreach($schools as $s): ?>
+                            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php elseif(isset($schools) && count($schools) == 1): ?>
+                    <input type="hidden" name="school_id" value="<?= $schools[0]['id'] ?>">
+                    <div style="background: #e2e8f0; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                        <strong>Escola:</strong> <?= htmlspecialchars($schools[0]['name']) ?>
+                    </div>
+                <?php endif; ?>
+
                 <label for="name">Nome do Planejamento</label>
                 <input type="text" name="name" id="name" required placeholder="Ex: Planejamento Bimestral 01" class="form-control">
                 <small style="color: #666;">Identificação principal do documento.</small>

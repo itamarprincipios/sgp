@@ -57,6 +57,8 @@ $routes = [
     'semed/coordinator/store' => 'SemedController@storeCoordinator',
     'semed/coordinator/edit' => 'SemedController@editCoordinator',
     'semed/coordinator/update' => 'SemedController@updateCoordinator',
+    'semed/coordinator/unlink-school' => 'SemedController@unlinkSchoolFromCoordinator',
+    'semed/coordinator/link-school' => 'SemedController@linkSchoolToCoordinator',
     'semed/password/reset' => 'SemedController@resetPassword',
     'semed/plannings' => 'SemedController@plannings',
     'semed/reports' => 'SemedController@reports',
@@ -69,11 +71,18 @@ $routes = [
     // Admin Routes
     'admin/dashboard' => 'AdminController@dashboard',
     'admin/user/store' => 'AdminController@storeUser',
+    'admin/user/edit' => 'AdminController@editUser',
     'admin/user/update' => 'AdminController@updateUser',
     'admin/user/delete' => 'AdminController@deleteUser',
     'admin/user/reset-password' => 'AdminController@resetPassword',
     'admin/school/store' => 'AdminController@storeSchool',
+    'admin/school/edit' => 'AdminController@editSchool',
+    'admin/school/update' => 'AdminController@updateSchool',
     'admin/school/delete' => 'AdminController@deleteSchool',
+    'admin/schools' => 'AdminController@schools',
+    'admin/coordinators' => 'AdminController@coordinators',
+    'admin/professors' => 'AdminController@professors',
+    'admin/reports' => 'AdminController@reports',
 
 
 

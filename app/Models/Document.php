@@ -64,26 +64,53 @@ class Document extends Model {
         return $this->db->query($sql, $params)->fetchAll();
     }
 
-    public function getGlobalStats() {
+    public function getGlobalStats($schoolIds = []) {
+        $whereClause = "";
+        $whereClauseSchool = "";
+        
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            $whereClause = " AND u.school_id IN ($placeholders)";
+            $whereClauseSchool = " WHERE id IN ($placeholders)";
+            $whereClausePeriod = " WHERE school_id IN ($placeholders)";
+            $whereClauseUser = " AND school_id IN ($placeholders)";
+        }
+
         $stats = [
-            'total_docs' => $this->db->query("SELECT COUNT(*) as count FROM documents")->fetch()['count'],
-            'total_professors' => $this->db->query("SELECT COUNT(*) as count FROM users WHERE role = 'professor'")->fetch()['count'],
-            'total_schools' => $this->db->query("SELECT COUNT(*) as count FROM schools")->fetch()['count'],
-            'total_plannings' => $this->db->query("SELECT COUNT(*) as count FROM periods")->fetch()['count'],
+            'total_docs' => $this->db->query("SELECT COUNT(DISTINCT d.id) as count FROM documents d LEFT JOIN users u ON d.user_id = u.id WHERE 1=1 $whereClause")->fetch()['count'],
+            'total_professors' => $this->db->query("SELECT COUNT(*) as count FROM users WHERE role = 'professor' " . ($whereClauseUser ?? ""))->fetch()['count'],
+            'total_schools' => $this->db->query("SELECT COUNT(*) as count FROM schools " . ($whereClauseSchool ?? ""))->fetch()['count'],
+            'total_plannings' => $this->db->query("SELECT COUNT(*) as count FROM periods " . ($whereClausePeriod ?? ""))->fetch()['count'],
         ];
         return $stats;
     }
 
-    public function getMonthlyStats() {
+    public function getMonthlyStats($schoolIds = []) {
+        $whereClause = "";
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            $whereClause = "AND u.school_id IN ($placeholders)";
+        }
+
         return $this->db->query("
-            SELECT DATE_FORMAT(submitted_at, '%Y-%m') as month, COUNT(*) as count 
-            FROM documents 
+            SELECT DATE_FORMAT(d.submitted_at, '%Y-%m') as month, COUNT(*) as count 
+            FROM documents d
+            LEFT JOIN users u ON d.user_id = u.id
+            WHERE d.submitted_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+            $whereClause
             GROUP BY month 
             ORDER BY month ASC
         ")->fetchAll();
     }
 
-    public function getRankingSchools() {
+    public function getRankingSchools($schoolIds = []) {
+        $whereClause = "";
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            // Explicitly qualify 's.id' to avoid ambiguity if joins are added later, though here it is 's' alias
+            $whereClause = "WHERE s.id IN ($placeholders)";
+        }
+
         // Ranking baseado em % de entrega em relacao ao prazo (SIMPLIFICADO para MVP: Count of on-time)
         // Precisamos comparar submitted_at com deadline.
         $sql = "SELECT s.name as school_name, 
@@ -93,19 +120,31 @@ class Document extends Model {
                 LEFT JOIN users u ON s.id = u.school_id
                 LEFT JOIN documents d ON u.id = d.user_id
                 LEFT JOIN periods p ON d.period_id = p.id
+                $whereClause
                 GROUP BY s.id
                 ORDER BY on_time_docs DESC, total_docs DESC
                 LIMIT 3";
         return $this->db->query($sql)->fetchAll();
     }
 
-    public function getDocumentStatsBySchool() {
-         $sql = "SELECT s.name, COUNT(d.id) as total_docs 
-                 FROM schools s 
-                 LEFT JOIN users u ON s.id = u.school_id 
-                 LEFT JOIN documents d ON u.id = d.user_id 
-                 GROUP BY s.id";
-         return $this->db->query($sql)->fetchAll();
+    public function getDocumentStatsBySchool($schoolIds = []) {
+        $whereClause = "";
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            $whereClause = "WHERE s.id IN ($placeholders)";
+        }
+
+        $sql = "SELECT 
+                    s.name as school_name,
+                    COUNT(d.id) as total_docs
+                FROM schools s
+                LEFT JOIN users u ON s.id = u.school_id
+                LEFT JOIN documents d ON u.id = d.user_id
+                $whereClause
+                GROUP BY s.id, s.name
+                ORDER BY total_docs DESC
+                LIMIT 10";
+        return $this->db->query($sql)->fetchAll();
     }
 
     public function updateStatus($id, $data) {

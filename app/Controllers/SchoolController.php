@@ -11,35 +11,98 @@ class SchoolController extends Controller {
     public function dashboard() {
         checkAuth('coordinator');
         $user = auth();
-        $schoolId = $user['school_id'];
         
-        // Data for Tabs
-        // Tab 1: Plannings (Created by Coordinator)
-        $planningModel = new Planning();
-        $plannings = $planningModel->getBySchoolId($schoolId);
-        $pendingSubmissions = $planningModel->getPendingSubmissions($schoolId);
+        $userModel = new User();
+        // Get all assigned schools (pivot + main)
+        // If main school_id is set, it's one. If pivot has rows, add them.
+        $schoolIds = $userModel->getAssignedSchoolIds($user['id']);
+        
+        // Include the legacy/main one if not in pivot (migration safety)
+        if (!in_array($user['school_id'], $schoolIds) && !empty($user['school_id'])) {
+            $schoolIds[] = $user['school_id'];
+        }
+        
+        // If no schools associated, fallback or error (but Coordinator usually has at least one)
+        if (empty($schoolIds)) $schoolIds = [0];
 
-        // School Info
+        // LOGIC CHANGE: 
+        // We need to fetch data for ALL these schools.
+        // Existing models need to accept ARRAYS or we loop.
+        // Best approach: Update models to accept Arrays (like we did for SEMED).
+        
+        // However, SchoolController is designed for "Context of a School".
+        // Options:
+        // 1. Show Aggregate (All Plannings from All Schools).
+        // 2. Add a Dropdown to "Switch School Context" at the top.
+        // Given complexity vs usability:
+        // Aggregate is good for overview, but might be confusing if names clash.
+        // Let's do Aggregate for MVP as requested "Coordinator seeing schools linked".
+        
+        // Initialize Models
         $schoolModel = new School();
-        $school = $schoolModel->findById($schoolId);
+        $docModel = new Document(); // Fix undefined variable
+        
+        // Fetch School Objects
+        $schools = [];
+        foreach($schoolIds as $sid) {
+            $s = $schoolModel->findById($sid);
+            if ($s) $schools[] = $s;
+        }
 
-        // Tab 2: Recent Uploads (All docs)
-        $docModel = new Document();
-        
+        // Define Filters from GET
         $filters = [
-            'period_id' => $_GET['period_id'] ?? '',
-            'professor_id' => $_GET['professor_id'] ?? '',
-            'status' => $_GET['status'] ?? ''
+            'period_id' => $_GET['period_id'] ?? null,
+            'professor_id' => $_GET['professor_id'] ?? null,
+            'status' => $_GET['status'] ?? null
         ];
+
+        // Create Map for Name Injection
+        $schoolsMap = [];
+        foreach($schools as $s) {
+            $schoolsMap[$s['id']] = $s['name'];
+        }
         
-        $documents = $docModel->getBySchoolIdWithFilters($schoolId, $filters);
+        // Default single school context for view compatibility
+        $school = !empty($schools) ? $schools[0] : null;
+
+        // Tab 1: Plannings
+
+        // Tab 1: Plannings
+        $planningModel = new Planning();
+        $plannings = [];
+        $pendingSubmissions = [];
+        foreach($schoolIds as $sid) {
+            $name = $schoolsMap[$sid] ?? '';
+            
+            $p = $planningModel->getBySchoolId($sid);
+            if($p) {
+                foreach($p as &$val) $val['school_name'] = $name;
+                $plannings = array_merge($plannings, $p);
+            }
+            
+            $sub = $planningModel->getPendingSubmissions($sid);
+            if($sub) {
+                foreach($sub as &$val) $val['school_name'] = $name;
+                $pendingSubmissions = array_merge($pendingSubmissions, $sub);
+            }
+        }
         
+        // Tab 2: Recent Uploads
+        $documents = [];
+        foreach($schoolIds as $sid) {
+             $docs = $docModel->getBySchoolIdWithFilters($sid, $filters);
+             if($docs) {
+                 $name = $schoolsMap[$sid] ?? '';
+                 foreach($docs as &$val) $val['school_name'] = $name;
+                 $documents = array_merge($documents, $docs);
+             }
+        }
+        
+        // Count New
         $newUploadsCount = 0;
         $lastViewed = $_SESSION['last_viewed_uploads'] ?? null;
-        
         foreach ($documents as $d) {
             if (in_array($d['status'], ['enviado', 'atrasado'])) {
-                // If never viewed or submitted after simple timestamp check
                 if (!$lastViewed || strtotime($d['submitted_at']) > $lastViewed) {
                     $newUploadsCount++;
                 }
@@ -48,15 +111,34 @@ class SchoolController extends Controller {
         
         // Tab 3: Classes
         $classModel = new ClassModel();
-        $classes = $classModel->getBySchoolIdWithProfessor($schoolId);
+        $classes = [];
+        foreach($schoolIds as $sid) {
+            $c = $classModel->getBySchoolIdWithProfessor($sid);
+            if($c) {
+                $name = $schoolsMap[$sid] ?? '';
+                foreach($c as &$val) {
+                    $val['school_id'] = $sid; 
+                    $val['school_name'] = $name;
+                }
+                $classes = array_merge($classes, $c);
+            }
+        }
 
         // Tab 4: Professors
-        $userModel = new User();
-        $professors = $userModel->getProfessorsBySchoolWithClass($schoolId);
+        $professors = [];
+        foreach($schoolIds as $sid) {
+            $p = $userModel->getProfessorsBySchoolWithClass($sid);
+            if($p) {
+                $name = $schoolsMap[$sid] ?? '';
+                foreach($p as &$val) $val['school_name'] = $name;
+                $professors = array_merge($professors, $p);
+            }
+        }
 
         $this->view('dashboard/school', [
             'user' => $user,
-            'school' => $school,
+            'school' => $school, // Layout might expect single school object
+            'schools' => $schools, // Pass all
             'plannings' => $plannings,
             'documents' => $documents,
             'classes' => $classes,
@@ -69,18 +151,43 @@ class SchoolController extends Controller {
 
     public function createPlanning() {
         checkAuth('coordinator');
-        $this->view('dashboard/planning_create');
+        $user = auth();
+        $userModel = new User();
+        $schoolIds = $userModel->getAssignedSchoolIds($user['id']);
+        if (!in_array($user['school_id'], $schoolIds) && !empty($user['school_id'])) {
+            $schoolIds[] = $user['school_id'];
+        }
+        
+        $schoolModel = new School();
+        $schools = [];
+        foreach($schoolIds as $sid) {
+            $schools[] = $schoolModel->findById($sid);
+        }
+
+        $this->view('dashboard/planning_create', ['schools' => $schools]);
     }
 
     public function storePlanning() {
         checkAuth('coordinator');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $start_date = $_POST['start_date']; // Vigencia YYYY-MM-DD
+            $start_date = $_POST['start_date']; 
             
-            // Deadline: 1 dia antes da vigência, às 23:59:59
             $deadline = date('Y-m-d 23:59:59', strtotime($start_date . ' - 1 day'));
-            // Abertura: 7 dias antes da vigência, às 00:00:00
             $opening_date = date('Y-m-d 00:00:00', strtotime($start_date . ' - 7 days'));
+
+            // School ID Validation
+            $user = auth();
+            $targetSchoolId = $_POST['school_id'] ?? $user['school_id'];
+            
+            $userModel = new User();
+            $assigned = $userModel->getAssignedSchoolIds($user['id']);
+            if (!empty($user['school_id'])) $assigned[] = $user['school_id'];
+            
+            if (!in_array($targetSchoolId, $assigned)) {
+                 $_SESSION['error'] = "Você não tem permissão para esta escola.";
+                 redirect('school/dashboard');
+                 return;
+            }
 
             $data = [
                 'name' => $_POST['name'],
@@ -89,14 +196,14 @@ class SchoolController extends Controller {
                 'end_date' => $_POST['end_date'],
                 'deadline' => $deadline,
                 'opening_date' => $opening_date,
-                'school_id' => auth()['school_id'],
+                'school_id' => $targetSchoolId,
                 'is_physical_education' => isset($_POST['is_physical_education']) ? 1 : 0
             ];
 
             $planning = new Planning();
             $planning->create($data);
 
-            redirect('school/dashboard'); // Could add ?tab=planning param to open correct tab
+            redirect('school/dashboard'); 
         }
     }
 
@@ -185,10 +292,21 @@ class SchoolController extends Controller {
         checkAuth('coordinator');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = $_POST['name'];
-            $schoolId = auth()['school_id'];
+            $user = auth();
+            $targetSchoolId = $_POST['school_id'] ?? $user['school_id'];
+            
+            $userModel = new User();
+            $assigned = $userModel->getAssignedSchoolIds($user['id']);
+            if (!empty($user['school_id'])) $assigned[] = $user['school_id'];
+            
+            if (!in_array($targetSchoolId, $assigned)) {
+                 $_SESSION['error'] = "Você não tem permissão para esta escola.";
+                 redirect('school/dashboard');
+            }
+
             $classModel = new ClassModel();
-            $classModel->create($schoolId, $name);
-            redirect('school/dashboard');
+            $classModel->create($targetSchoolId, $name);
+            redirect('school/dashboard?tab=classes');
         }
     }
 
@@ -241,9 +359,21 @@ class SchoolController extends Controller {
         checkAuth('coordinator');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userModel = new User();
+            
+            $user = auth();
+            $targetSchoolId = $_POST['school_id'] ?? $user['school_id'];
+            
+            $assigned = $userModel->getAssignedSchoolIds($user['id']);
+            if (!empty($user['school_id'])) $assigned[] = $user['school_id'];
+            
+            if (!in_array($targetSchoolId, $assigned)) {
+                 $_SESSION['error'] = "Você não tem permissão para esta escola.";
+                 redirect('school/dashboard');
+            }
+
             // Basic validation skipped for MVP
             $data = [
-                'school_id' => auth()['school_id'],
+                'school_id' => $targetSchoolId,
                 'name' => $_POST['name'],
                 'email' => $_POST['email'],
                 'password' => password_hash('professor123', PASSWORD_DEFAULT), // Default password fixed
@@ -252,7 +382,7 @@ class SchoolController extends Controller {
                 'is_physical_education' => isset($_POST['is_physical_education']) ? 1 : 0
             ];
             $userModel->createProfessor($data);
-            redirect('school/dashboard'); // OR ?tab=professors
+            redirect('school/dashboard?tab=professors');
         }
     }
 
@@ -353,16 +483,19 @@ class SchoolController extends Controller {
 
     public function associateToBimester() {
         checkAuth('coordinator');
-        $id = $_GET['id'] ?? null;
-        $bimester = $_GET['bimester'] ?? null;
         
-        if ($id && $bimester !== null) {
-            $planningModel = new Planning();
-            $planningModel->updateBimester($id, $bimester);
-            $_SESSION['success'] = "Planejamento organizado no " . $bimester . "º Bimestre!";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['planning_id'] ?? null;
+            $bimester = $_POST['bimester'] ?? null;
+            
+            if ($id && $bimester !== null) {
+                $planningModel = new Planning();
+                $planningModel->updateBimester($id, $bimester);
+                $_SESSION['success'] = "Planejamento organizado no " . $bimester . "º Bimestre!";
+            }
         }
         
-        redirect('school/dashboard');
+        redirect('school/dashboard?tab=bimesters');
     }
 
     public function resetProfessorPassword() {

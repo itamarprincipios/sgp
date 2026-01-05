@@ -37,6 +37,22 @@
                     <i class="fas fa-shield-alt"></i>
                     <span>Painel Admin</span>
                 </a>
+                <a href="<?= url('admin/schools') ?>" class="semed-nav-btn <?= strpos($_SERVER['REQUEST_URI'], 'admin/schools') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-school"></i>
+                    <span>Escolas</span>
+                </a>
+                <a href="<?= url('admin/coordinators') ?>" class="semed-nav-btn <?= strpos($_SERVER['REQUEST_URI'], 'admin/coordinators') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Coordenadores</span>
+                </a>
+                <a href="<?= url('admin/professors') ?>" class="semed-nav-btn <?= strpos($_SERVER['REQUEST_URI'], 'admin/professors') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Professores</span>
+                </a>
+                <a href="<?= url('admin/reports') ?>" class="semed-nav-btn <?= strpos($_SERVER['REQUEST_URI'], 'admin/reports') !== false ? 'active' : '' ?>">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Relatórios</span>
+                </a>
             <?php elseif ($role === 'semed'): ?>
                 <a href="<?= url('semed/dashboard') ?>" class="semed-nav-btn <?= strpos($_SERVER['REQUEST_URI'], 'semed/dashboard') !== false ? 'active' : '' ?>">
                     <i class="fas fa-chart-line"></i>

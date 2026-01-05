@@ -8,4 +8,8 @@ class Model {
     public function __construct() {
         $this->db = Database::getInstance();
     }
+
+    public function getDb() {
+        return $this->db;
+    }
 }

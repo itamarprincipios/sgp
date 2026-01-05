@@ -3,7 +3,7 @@ require_once __DIR__ . '/../Core/Model.php';
 
 class RankingModel extends Model {
     
-    public function getProfessorRanking($filter = 'annual', $year = null) {
+    public function getProfessorRanking($filter = 'annual', $year = null, $schoolIds = []) {
         if (!$year) $year = date('Y');
         $where = "YEAR(d.submitted_at) = :year";
         $params = ['year' => $year];
@@ -15,6 +15,11 @@ class RankingModel extends Model {
             $bimestre = ceil(date('m') / 2);
             $months = [($bimestre * 2) - 1, $bimestre * 2];
             $where .= " AND MONTH(d.submitted_at) IN (" . implode(',', $months) . ")";
+        }
+
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            $where .= " AND u.school_id IN ($placeholders)";
         }
 
         $sql = "SELECT u.name as professor_name, u.whatsapp, s.name as school_name, SUM(d.score_final) as total_points
@@ -29,7 +34,7 @@ class RankingModel extends Model {
         return $this->db->query($sql, $params)->fetchAll();
     }
 
-    public function getSchoolRanking($filter = 'annual', $year = null) {
+    public function getSchoolRanking($filter = 'annual', $year = null, $schoolIds = []) {
         if (!$year) $year = date('Y');
         $where = "YEAR(d.submitted_at) = :year";
         $params = ['year' => $year];
@@ -37,6 +42,11 @@ class RankingModel extends Model {
         if ($filter === 'monthly') {
             $where .= " AND MONTH(d.submitted_at) = :month";
             $params['month'] = date('m');
+        }
+
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            $where .= " AND s.id IN ($placeholders)";
         }
 
         $sql = "SELECT s.name as school_name, 
@@ -54,12 +64,19 @@ class RankingModel extends Model {
         return $this->db->query($sql, $params)->fetchAll();
     }
 
-    public function getCoordinatorRanking($filter = 'annual', $year = null) {
+    public function getCoordinatorRanking($filter = 'annual', $year = null, $schoolIds = []) {
         // Coordenador pontualidade baseada na média da escola ou no fato de aprovarem rápido?
         // O requisito diz "Coordenadores mais pontuais". Vou assumir pontuação da escola vinculada.
         if (!$year) $year = date('Y');
         $where = "YEAR(d.submitted_at) = :year";
         $params = ['year' => $year];
+
+        if (!empty($schoolIds)) {
+            $placeholders = implode(',', array_map(function($id) { return intval($id); }, $schoolIds));
+            // Filtering indirectly via documents -> users -> school
+            // Or uc (Coordinator) -> school
+            $where .= " AND uc.school_id IN ($placeholders)";
+        }
 
         $sql = "SELECT uc.name as coordinator_name, uc.whatsapp, s.name as school_name, 
                        COUNT(d.id) as total_docs,

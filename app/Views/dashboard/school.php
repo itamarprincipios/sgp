@@ -162,11 +162,10 @@
     <button class="tab-btn" onclick="openTab(event, 'tab-professors')">Professores</button>
 </div>
 
+<?php $showSchool = isset($schools) && count($schools) > 1; ?>
+
 <!-- TAB 1: PLANEJAMENTOS (LISTA) -->
 <div id="tab-planning" class="tab-content active">
-    <!-- Removed sub-tabs -->
-    
-    <!-- Content from old subtab-list -->
     <div style="margin-bottom: 15px;">
         <a href="<?= url('school/planning/create') ?>" class="btn btn-primary" style="width: auto;"><i class="fas fa-plus"></i> Novo Planejamento</a>
     </div>
@@ -175,6 +174,7 @@
         <table class="data-table">
             <thead>
                 <tr>
+                   <?php if($showSchool): ?><th>Escola</th><?php endif; ?>
                    <th>Nome</th>
                    <th>Descrição/Período</th>
                    <th>Prazo Limite</th>
@@ -183,10 +183,13 @@
             </thead>
             <tbody>
                 <?php if(empty($plannings)): ?>
-                    <tr><td colspan="4">Nenhum planejamento criado.</td></tr>
+                    <tr><td colspan="<?= $showSchool ? 5 : 4 ?>">Nenhum planejamento criado.</td></tr>
                 <?php else: ?>
                     <?php foreach($plannings as $p): ?>
                         <tr>
+                            <?php if($showSchool): ?>
+                                <td><small class="badge" style="background: #e2e8f0; color: #333;"><?= htmlspecialchars($p['school_name']) ?></small></td>
+                            <?php endif; ?>
                             <td><?= htmlspecialchars($p['name']) ?></td>
                             <td><?= htmlspecialchars($p['description']) ?></td>
                             <td><?= date('d/m/Y', strtotime($p['deadline'])) ?></td>
@@ -207,64 +210,78 @@
     </div>
 </div>
 
-<!-- TAB 2: BIMESTRES -->
+<!-- TAB 2: ORGANIZAÇÃO POR BIMESTRES -->
 <div id="tab-bimesters" class="tab-content">
     <div class="list-section">
-        <h3 style="color: var(--primary);"><i class="fas fa-layer-group"></i> Organização por Bimestres - 2026</h3>
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Utilize os quadros abaixo para agrupar seus planejamentos para fins de organização pedagógica.</p>
+        <h3><i class="fas fa-calendar-alt"></i> Organização por Bimestres</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Associe os planejamentos cadastrados aos bimestres correspondentes para melhor organização.</p>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-            <?php for($b = 1; $b <= 4; $b++): ?>
-                <div class="card" style="border: 1px solid #ddd; background: #fff; padding: 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <div style="background: #f8f9fa; padding: 15px; border-bottom: 2px solid var(--primary); border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;">
-                        <h4 style="margin: 0; color: #333;"><?= $b ?>º Bimestre</h4>
-                        <div class="dropdown" style="position: relative; display: inline-block;">
-                            <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem; background: var(--primary); border: none; color: #fff; cursor: pointer; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: all 0.2s;" title="Adicionar Planejamento existente">
-                                <i class="fas fa-plus-circle"></i> Incluir
-                            </button>
-                            <div class="dropdown-content" style="display: none; position: absolute; background-color: #fff; min-width: 280px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; border-radius: 12px; border: 1px solid #e1e4e8; margin-top: 10px; right: 0; overflow: hidden; animation: slideDown 0.2s ease-out;">
-                                <div style="padding: 12px 15px; border-bottom: 1px solid #f1f3f5; background: #f8f9fa; font-weight: 700; font-size: 0.75rem; color: #495057; text-transform: uppercase; letter-spacing: 0.5px;">Vincular a este bimestre:</div>
-                                <div style="max-height: 300px; overflow-y: auto;">
-                                    <?php 
-                                        $unorganized = array_filter($plannings, function($p) { return empty($p['bimester']); });
-                                        if(empty($unorganized)):
-                                    ?>
-                                        <div style="padding: 20px; font-size: 0.85rem; color: #adb5bd; text-align: center; font-style: italic;">Todos já organizados</div>
-                                    <?php else: ?>
-                                        <?php foreach($unorganized as $up): ?>
-                                            <a href="<?= url('school/planning/associate-bimester?id=' . $up['id'] . '&bimester=' . $b) ?>" style="color: #212529; padding: 12px 15px; text-decoration: none; display: block; font-size: 0.9rem; border-bottom: 1px solid #f8f9fa; transition: background 0.2s; display: flex; align-items: center; gap: 10px;">
-                                                <i class="fas fa-file-alt" style="color: #6c757d;"></i>
-                                                <span><?= htmlspecialchars($up['name']) ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="padding: 15px; min-height: 80px; background: #fafafa;">
-                        <?php 
-                            $bimesterPlannings = array_filter($plannings, function($p) use ($b) { return $p['bimester'] == $b; });
-                        ?>
-                        <?php if(empty($bimesterPlannings)): ?>
-                            <div style="text-align: center; color: #bbb; padding-top: 20px; font-size: 0.8rem; font-style: italic;">
-                                Nenhum item vinculado
-                            </div>
-                        <?php else: ?>
-                            <?php foreach($bimesterPlannings as $p): ?>
-                                <div style="background: #fff; border: 1px solid #eee; margin-bottom: 8px; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary);">
-                                    <div style="font-weight: bold; color: #333; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;" title="<?= htmlspecialchars($p['name']) ?>">
-                                        <?= htmlspecialchars($p['name']) ?>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <?php 
+            $bimestres = [
+                ['id' => 1, 'name' => '1º Bimestre', 'color' => '#3b82f6'],
+                ['id' => 2, 'name' => '2º Bimestre', 'color' => '#10b981'],
+                ['id' => 3, 'name' => '3º Bimestre', 'color' => '#f59e0b'],
+                ['id' => 4, 'name' => '4º Bimestre', 'color' => '#8b5cf6']
+            ];
+            
+            foreach($bimestres as $bim):
+                // Filter plannings for this bimester
+                $bimPlannings = array_filter($plannings, function($p) use ($bim) {
+                    return isset($p['bimester']) && $p['bimester'] == $bim['id'];
+                });
+            ?>
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 4px solid <?= $bim['color'] ?>;">
+                    <h4 style="margin: 0 0 15px 0; color: <?= $bim['color'] ?>; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-calendar-check"></i>
+                        <?= $bim['name'] ?>
+                    </h4>
+                    
+                    <?php if(empty($bimPlannings)): ?>
+                        <p style="color: #9ca3af; font-size: 0.9rem; font-style: italic;">Nenhum planejamento associado a este bimestre.</p>
+                    <?php else: ?>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <?php foreach($bimPlannings as $p): ?>
+                                <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong><?= htmlspecialchars($p['name']) ?></strong>
+                                        <?php if($showSchool): ?>
+                                            <br><small style="color: #6b7280;"><?= htmlspecialchars($p['school_name']) ?></small>
+                                        <?php endif; ?>
                                     </div>
-                                    <a href="<?= url('school/planning/associate-bimester?id=' . $p['id'] . '&bimester=0') ?>" class="btn-icon" style="color: #999; font-size: 0.8rem;" title="Remover deste bimestre">
-                                        <i class="fas fa-times-circle"></i>
+                                    <a href="<?= url('school/planning/view?id=' . $p['id']) ?>" class="btn-icon" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
                                     </a>
-                                </div>
+                                </li>
                             <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
+                        </ul>
+                    <?php endif; ?>
+                    
+                    <!-- Dropdown to associate unassigned plannings -->
+                    <?php 
+                    $unassignedPlannings = array_filter($plannings, function($p) {
+                        return empty($p['bimester']) || $p['bimester'] == 0;
+                    });
+                    if(!empty($unassignedPlannings)): 
+                    ?>
+                        <form action="<?= url('school/planning/associate-bimester') ?>" method="POST" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f3f4f6;">
+                            <input type="hidden" name="bimester" value="<?= $bim['id'] ?>">
+                            <select name="planning_id" required style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 10px;">
+                                <option value="">Associar planejamento...</option>
+                                <?php foreach($unassignedPlannings as $p): ?>
+                                    <option value="<?= $p['id'] ?>">
+                                        <?= htmlspecialchars($p['name']) ?>
+                                        <?php if($showSchool): ?> - <?= htmlspecialchars($p['school_name']) ?><?php endif; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px; font-size: 0.9rem;">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 </div>
-            <?php endfor; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>
@@ -278,6 +295,7 @@
         <table class="data-table">
             <thead>
                 <tr>
+                    <?php if($showSchool): ?><th>Escola</th><?php endif; ?>
                     <th>Professor</th>
                     <th>Turma</th>
                     <th>Planejamento Pendente</th>
@@ -288,12 +306,15 @@
             </thead>
             <tbody>
                 <?php if(empty($pendingSubmissions)): ?>
-                    <tr><td colspan="6" style="text-align: center; color: #2ecc71; font-weight: bold; padding: 20px;"><i class="fas fa-check-circle"></i> Parabéns! Nenhuma pendência encontrada.</td></tr>
+                    <tr><td colspan="<?= $showSchool ? 7 : 6 ?>" style="text-align: center; color: #2ecc71; font-weight: bold; padding: 20px;"><i class="fas fa-check-circle"></i> Parabéns! Nenhuma pendência encontrada.</td></tr>
                 <?php else: ?>
                     <?php foreach($pendingSubmissions as $p): 
                         $isLate = strtotime($p['deadline']) < time();
                     ?>
                         <tr style="<?= $isLate ? 'background-color: #fff5f5;' : '' ?>">
+                            <?php if($showSchool): ?>
+                                <td><small class="badge" style="background: #e2e8f0; color: #333;"><?= htmlspecialchars($p['school_name']) ?></small></td>
+                            <?php endif; ?>
                             <td><?= htmlspecialchars($p['professor_name']) ?></td>
                             <td><?= htmlspecialchars($p['class_name']) ?></td>
                             <td><?= htmlspecialchars($p['planning_name']) ?></td>
@@ -335,10 +356,7 @@
     <div class="list-section">
         <h3>Últimos Documentos Recebidos</h3>
         
-        <!-- Filter Form -->
-        <!-- Filter Form -->
         <form method="GET" action="<?= url('school/dashboard') ?>" class="filter-container">
-            <!-- Hack to keep tab active after reload -->
             <input type="hidden" name="tab" value="uploads"> 
             
             <div class="filter-group">
@@ -347,6 +365,7 @@
                     <option value="">Todos</option>
                     <?php foreach($plannings as $p): ?>
                         <option value="<?= $p['id'] ?>" <?= ($filters['period_id'] == $p['id']) ? 'selected' : '' ?>>
+                             <?php if($showSchool) echo '['.htmlspecialchars($p['school_name']).'] '; ?>
                             <?= htmlspecialchars($p['name']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -359,6 +378,7 @@
                     <option value="">Todos</option>
                     <?php foreach($professors as $prof): ?>
                         <option value="<?= $prof['id'] ?>" <?= ($filters['professor_id'] == $prof['id']) ? 'selected' : '' ?>>
+                            <?php if($showSchool) echo '['.htmlspecialchars($prof['school_name']).'] '; ?>
                             <?= htmlspecialchars($prof['name']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -387,8 +407,9 @@
         <table class="data-table">
            <thead>
                <tr>
+                   <?php if($showSchool): ?><th>Escola</th><?php endif; ?>
                    <th>Professor</th>
-                   <th>Turma</th> <!-- Placeholder for linking data later -->
+                   <th>Turma</th>
                    <th>Documento</th>
                    <th>Status</th>
                    <th>Ação</th>
@@ -396,12 +417,15 @@
            </thead>
            <tbody>
                <?php if(empty($documents)): ?>
-                   <tr><td colspan="5">Nenhum documento.</td></tr>
+                   <tr><td colspan="<?= $showSchool ? 6 : 5 ?>">Nenhum documento.</td></tr>
                <?php else: ?>
                    <?php foreach($documents as $doc): ?>
                        <tr>
+                           <?php if($showSchool): ?>
+                                <td><small class="badge" style="background: #e2e8f0; color: #333;"><?= htmlspecialchars($doc['school_name']) ?></small></td>
+                           <?php endif; ?>
                            <td><?= htmlspecialchars($doc['professor_name']) ?></td>
-                           <td>-</td> <!-- Need to join class name in query if needed here -->
+                           <td>-</td>
                            <td><?= htmlspecialchars($doc['title']) ?></td>
                            <td><span class="status-badge status-<?= $doc['status'] ?>"><?= ucfirst($doc['status']) ?></span></td>
                            <td><a href="<?= url('uploads/' . $doc['file_path']) ?>" target="_blank" class="btn-icon"><i class="fas fa-eye"></i></a></td>
@@ -419,6 +443,19 @@
         <div class="upload-section">
             <h3>Cadastrar Nova Turma</h3>
             <form action="<?= url('school/class/store') ?>" method="POST">
+                <?php if(count($schools) > 1): ?>
+                    <div class="form-group">
+                        <label>Escola</label>
+                        <select name="school_id" required class="form-control" style="width: 100%; margin-bottom: 10px;">
+                            <?php foreach($schools as $s): ?>
+                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                <?php else: ?>
+                    <input type="hidden" name="school_id" value="<?= $schools[0]['id'] ?>">
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label>Nome da Turma</label>
                     <input type="text" name="name" required placeholder="Ex: 5º Ano A">
@@ -432,7 +469,12 @@
                 <?php foreach($classes as $c): ?>
                     <li style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
                         <div>
-                            <span style="font-weight: bold;"><?= htmlspecialchars($c['name']) ?></span>
+                            <span style="font-weight: bold;">
+                                <?php if($showSchool): ?>
+                                    <span class="badge" style="background: #e2e8f0; color: #333; font-size: 0.8em; margin-right: 5px;"><?= htmlspecialchars($c['school_name'] ?? '') ?></span>
+                                <?php endif; ?>
+                                <?= htmlspecialchars($c['name']) ?>
+                            </span>
                             <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">
                                 <?php if($c['professor_name']): ?>
                                     <i class="fas fa-chalkboard-teacher"></i> Titular: <?= htmlspecialchars($c['professor_name']) ?>
@@ -458,6 +500,19 @@
         <div class="upload-section">
             <h3>Cadastrar Professor</h3>
             <form action="<?= url('school/professor/store') ?>" method="POST">
+                <?php if(count($schools) > 1): ?>
+                    <div class="form-group">
+                        <label>Escola</label>
+                        <select name="school_id" required class="form-control" style="width: 100%; margin-bottom: 10px;">
+                            <?php foreach($schools as $s): ?>
+                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                <?php else: ?>
+                    <input type="hidden" name="school_id" value="<?= $schools[0]['id'] ?>">
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label>Nome Completo</label>
                     <input type="text" name="name" required>
@@ -476,7 +531,11 @@
                     <select name="class_id">
                         <option value="">Selecione uma turma...</option>
                         <?php foreach($classes as $c): ?>
-                            <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+                            <!-- Grouping might be nice but simple name append is faster -->
+                            <option value="<?= $c['id'] ?>">
+                                <?php if($showSchool) echo '[' . htmlspecialchars($c['school_name'] ?? '') . '] '; ?>
+                                <?= htmlspecialchars($c['name']) ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -492,6 +551,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php if($showSchool): ?><th>Escola</th><?php endif; ?>
                         <th>Nome</th>
                         <th>Turma</th>
                         <th>WhatsApp</th>
@@ -501,6 +561,9 @@
                 <tbody>
                     <?php foreach($professors as $prof): ?>
                         <tr>
+                            <?php if($showSchool): ?>
+                                <td><small class="badge" style="background: #e2e8f0; color: #333;"><?= htmlspecialchars($prof['school_name'] ?? '') ?></small></td>
+                            <?php endif; ?>
                             <td><?= htmlspecialchars($prof['name']) ?></td>
                             <td>
                                 <?php 
@@ -582,12 +645,22 @@
             document.querySelectorAll('.dropdown-content').forEach(d => d.style.display = 'none');
         }
     });
-    // Open specific tab if in URL params (e.g. from filtering)
-    <?php if(isset($_GET['period_id']) || isset($_GET['professor_id']) || isset($_GET['status']) || (isset($_GET['tab']) && $_GET['tab'] == 'uploads')): ?>
-        document.addEventListener('DOMContentLoaded', () => {
-             openTab(null, 'tab-uploads');
-        });
-    <?php endif; ?>
+    
+    // Open specific tab based on URL parameter
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        
+        if (tab === 'classes') {
+            openTab(null, 'tab-classes');
+        } else if (tab === 'professors') {
+            openTab(null, 'tab-professors');
+        } else if (tab === 'bimesters') {
+            openTab(null, 'tab-bimesters');
+        } else if (tab === 'uploads' || urlParams.has('period_id') || urlParams.has('professor_id') || urlParams.has('status')) {
+            openTab(null, 'tab-uploads');
+        }
+    });
 </script>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

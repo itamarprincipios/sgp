@@ -64,31 +64,227 @@
     </div>
 </div>
 
-<div class="tabs">
-    <button class="tab-btn active" onclick="openTab(event, 'tab-semed')">Administradores SEMED</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-schools')">Escolas</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-coordinators')">Coordenadores</button>
-    <button class="tab-btn" onclick="openTab(event, 'tab-professors')">Professores</button>
-</div>
+<!-- Tab buttons removed -->
 
 <!-- TAB SEMED -->
 <div id="tab-semed" class="tab-content active">
+    <style>
+        .semed-form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+        .semed-form-title {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+        .modern-form-grid {
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px;
+        }
+        .modern-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .modern-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #334155;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        .modern-input:focus {
+            border-color: #3b82f6;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .modern-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #334155;
+            font-family: inherit;
+        }
+        .modern-select:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .modern-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .modern-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+        .input-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        @media (max-width: 768px) {
+            .modern-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <h3>Gestão SEMED</h3>
-    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <h4>Cadastrar Novo Usuário SEMED</h4>
-        <form action="<?= url('admin/user/store') ?>" method="POST" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+    
+    <div class="semed-form-card">
+        <div class="semed-form-title">
+            <i class="fas fa-user-plus" style="margin-right: 10px; color: #3b82f6;"></i> Cadastrar Novo Usuário SEMED
+        </div>
+        
+        <form action="<?= url('admin/user/store') ?>" method="POST" class="modern-form-grid">
             <input type="hidden" name="role" value="semed">
+            
             <div class="form-group">
-                <label>Nome</label>
-                <input type="text" name="name" required class="form-control" placeholder="Nome Completo">
+                <label class="modern-label">Nome Completo</label>
+                <input type="text" name="name" required class="modern-input" placeholder="Ex: João da Silva">
             </div>
+            
             <div class="form-group">
-                <label>Email (Login)</label>
-                <input type="email" name="email" required class="form-control" placeholder="email@exemplo.com">
+                <label class="modern-label">Email (Login)</label>
+                <input type="email" name="email" required class="modern-input" placeholder="email@exemplo.com">
             </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+
+            <div class="form-group">
+                <label class="modern-label"><i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp</label>
+                <input type="text" name="whatsapp" class="modern-input" placeholder="Ex: 5511999999999">
+            </div>
+            
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="modern-label">Escolas Vinculadas</label>
+                
+                <div class="school-selector-container" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 0;">
+                        <div id="schools-inputs-container"></div> <!-- Dynamic inputs will be appended here -->
+                        
+                        <!-- Visible Dropdown acting as "Add Button" -->
+                        <div style="position: relative; flex-grow: 1;">
+                            <select id="school-select-source" class="modern-select" style="width: 100%;">
+                                <option value="" disabled selected>+ Adicionar Escola...</option>
+                                <?php foreach($schools as $s): ?>
+                                    <option value="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['name']) ?>"><?= htmlspecialchars($s['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button type="button" id="btn-add-school" class="modern-btn" style="width: auto; padding: 0 20px; background: #22c55e;">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- Selected Schools List -->
+                    <div id="selected-schools-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; min-height: 40px;">
+                        <span style="color: #94a3b8; font-style: italic; font-size: 0.9rem; align-self: center;" id="no-schools-msg">Nenhuma escola vinculada.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="grid-column: 1 / -1; margin-top: 10px;">
+                <button type="submit" class="modern-btn">
+                    <i class="fas fa-check-circle"></i> Cadastrar Usuário
+                </button>
+            </div>
         </form>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sourceSelect = document.getElementById('school-select-source');
+            const addBtn = document.getElementById('btn-add-school');
+            const listContainer = document.getElementById('selected-schools-list');
+            const form = document.querySelector('form.modern-form-grid');
+            
+            // Set for tracking selected IDs to prevent duplicates
+            const selectedIds = new Set();
+            
+            function addSchool(id, name) {
+                if(!id || selectedIds.has(id)) return;
+                
+                selectedIds.add(id);
+                document.getElementById('no-schools-msg').style.display = 'none';
+                
+                // Hide option from dropdown
+                const option = sourceSelect.querySelector(`option[value="${id}"]`);
+                if(option) option.hidden = true;
+                
+                const item = document.createElement('div');
+                item.className = 'selected-school-item';
+                item.style.cssText = 'background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.3s;';
+                item.innerHTML = `
+                    <span>${name}</span>
+                    <button type="button" style="background: none; border: none; color: #e11d48; cursor: pointer; font-size: 1.1rem; padding: 0;" onclick="removeSchool(this, '${id}')">&times;</button>
+                    <input type="hidden" name="schools[]" value="${id}">
+                `;
+                
+                listContainer.appendChild(item);
+                sourceSelect.value = ""; // Reset dropdown
+            }
+            
+            window.removeSchool = function(btn, id) {
+                btn.parentElement.remove();
+                selectedIds.delete(id);
+                
+                // Show option back in dropdown
+                const option = sourceSelect.querySelector(`option[value="${id}"]`);
+                if(option) option.hidden = false;
+                
+                if(selectedIds.size === 0) {
+                    document.getElementById('no-schools-msg').style.display = 'block';
+                }
+            };
+            
+            // Add on click
+            addBtn.addEventListener('click', () => {
+                const id = sourceSelect.value;
+                if(id) {
+                    const option = sourceSelect.options[sourceSelect.selectedIndex];
+                    const name = option.getAttribute('data-name');
+                    addSchool(id, name);
+                }
+            });
+            
+            // Add on change (optional, better UX implies clicking Add or just picking)
+            sourceSelect.addEventListener('change', () => {
+                // Uncomment below if you want auto-add on select
+                // const id = sourceSelect.value;
+                // const option = sourceSelect.options[sourceSelect.selectedIndex];
+                // addSchool(id, option.getAttribute('data-name'));
+            });
+        });
+    </script>
     
     <table class="data-table">
         <thead>
@@ -105,6 +301,7 @@
                     <td><?= htmlspecialchars($u['email']) ?></td>
                     <td>
                         <a href="<?= url('admin/user/reset-password?id='.$u['id']) ?>" class="btn-icon" title="Resetar Senha (123456)" onclick="return confirm('Resetar senha para 123456?')"><i class="fas fa-key"></i></a>
+                        <a href="<?= url('admin/user/edit?id='.$u['id']) ?>" class="btn-icon" title="Editar Dados/Escolas" style="color: #3b82f6;"><i class="fas fa-edit"></i></a>
                         <a href="<?= url('admin/user/delete?id='.$u['id']) ?>" class="btn-icon" style="color: red;" title="Excluir" onclick="return confirm('Excluir este usuário?')"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
@@ -113,115 +310,8 @@
     </table>
 </div>
 
-<!-- TAB Schools -->
-<div id="tab-schools" class="tab-content">
-    <h3>Gestão Escolas</h3>
-    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <h4>Cadastrar Nova Escola</h4>
-        <form action="<?= url('admin/school/store') ?>" method="POST" style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: end;">
-            <div class="form-group">
-                <label>Nome da Escola</label>
-                <input type="text" name="name" required class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
-        </form>
-    </div>
-    
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($schools as $s): ?>
-                <tr>
-                    <td><?= $s['id'] ?></td>
-                    <td><?= htmlspecialchars($s['name']) ?></td>
-                    <td>
-                        <a href="<?= url('admin/school/delete?id='.$s['id']) ?>" class="btn-icon" style="color: red;" title="Excluir" onclick="return confirm('Excluir esta escola?')"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-<!-- TAB Coordinators -->
-<div id="tab-coordinators" class="tab-content">
-    <h3>Gestão Coordenadores</h3>
-    <!-- Creation logic is complex due to school linking, keeping simple listing/deletion/reset here -->
-    <p>Para criar coordenadores, use o painel SEMED ou cadastre aqui associando o ID da escola manualmente se necessário (simplificado).</p>
-    
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Escola (ID)</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($coordinators as $c): ?>
-                <tr>
-                    <td><?= htmlspecialchars($c['name']) ?></td>
-                    <td><?= $c['school_name'] ?? $c['school_id'] ?></td>
-                    <td>
-                        <a href="<?= url('admin/user/reset-password?id='.$c['id']) ?>" class="btn-icon" title="Resetar Senha" onclick="return confirm('Resetar senha?')"><i class="fas fa-key"></i></a>
-                        <a href="<?= url('admin/user/delete?id='.$c['id']) ?>" class="btn-icon" style="color: red;" title="Excluir" onclick="return confirm('Excluir?')"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-<!-- TAB Professors -->
-<div id="tab-professors" class="tab-content">
-    <h3>Gestão Professores</h3>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Escola (ID)</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($professors as $p): ?>
-                <tr>
-                    <td><?= htmlspecialchars($p['name']) ?></td>
-                    <td><?= $p['school_name'] ?? $p['school_id'] ?></td>
-                    <td>
-                        <a href="<?= url('admin/user/reset-password?id='.$p['id']) ?>" class="btn-icon" title="Resetar Senha" onclick="return confirm('Resetar senha?')"><i class="fas fa-key"></i></a>
-                        <a href="<?= url('admin/user/delete?id='.$p['id']) ?>" class="btn-icon" style="color: red;" title="Excluir" onclick="return confirm('Excluir?')"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
 <script>
-    function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].classList.remove("active");
-            tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tab-btn");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].classList.remove("active");
-        }
-        document.getElementById(tabName).style.display = "block";
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
-    }
-    // Default open
-    document.getElementById("tab-semed").style.display = "block";
+    // No tabs needed anymore
 </script>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
